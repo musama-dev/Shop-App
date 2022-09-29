@@ -4,21 +4,38 @@ class CartItem {
   final String id;
   final String title;
   final int quantity; // quantity of the items that the user buy.
-  final double price; // price per product. we calculate the total price by multiplying
+  final double
+      price; // price per product. we calculate the total price by multiplying
   // with quantity.
 
   CartItem(
       {required this.id,
       required this.title,
-      required this.quantity, 
+      required this.quantity,
       required this.price});
 }
 
-class Cart extends ChangeNotifier {
-  late Map<String, CartItem> _items;
+class Cart with ChangeNotifier {
+  Map<String, CartItem> _items = {}; // it must be initializes.
+  // If it not initialize then containsKey or these kind of methods did'nt work.
 
   Map<String, CartItem> get items {
     return {..._items};
+  }
+
+  int get itemCount {
+    // return _items == null ? 0 : // does'nt require anymore when _items initializes.
+    return _items.length; // if 3 products then return 3. you
+    // can also sum all quantities of products.
+  }
+
+  double get totalAmount {
+    // this getter calculates the total amount for the cart.
+    var total = 0.0;
+    _items.forEach((key, cartItem) {
+      total += cartItem.price * cartItem.quantity;
+    });
+    return total;
   }
 
   void addItem(String productId, double price, String title) {
@@ -26,12 +43,14 @@ class Cart extends ChangeNotifier {
     if (_items.containsKey(productId)) {
       // change quantity...
       // existing value automatically founds for that key.
-      _items.update(productId, (existingCartItem) => CartItem(
-        id: existingCartItem.id,
-        title: existingCartItem.title,
-        price: existingCartItem.price,
-        quantity: existingCartItem.quantity + 1,
-      ));
+      _items.update(
+          productId,
+          (existingCartItem) => CartItem(
+                id: existingCartItem.id,
+                title: existingCartItem.title,
+                price: existingCartItem.price,
+                quantity: existingCartItem.quantity + 1,
+              ));
     } else {
       _items.putIfAbsent(
           productId,
@@ -42,5 +61,8 @@ class Cart extends ChangeNotifier {
                 quantity: 1,
               ));
     }
+    notifyListeners();
   }
 }
+
+// _items are the items in the cart.

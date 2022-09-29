@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import './screens/products_overview_screen.dart';
 import 'screens/product_detail_screen.dart';
+import './screens/cart_screen.dart';
 import './providers/products.dart';
+import './providers/cart.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -10,7 +12,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    return MultiProvider(providers: [
+ChangeNotifierProvider(
       // you provide data in the form of objects in provider approach.
       
       // .) ChangeNotifierProvider cleans up your previous data automatically.
@@ -23,6 +26,10 @@ class MyApp extends StatelessWidget {
       // In version 3.0.0 of the provider package its builder instead of create.
 
       create: (ctx) => Products(),
+    ),
+    ChangeNotifierProvider(create: (ctx) => Cart(),
+    ),
+    ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "MyShop",
@@ -32,6 +39,7 @@ class MyApp extends StatelessWidget {
         home: ProductsOverviewScreen(),
         routes: {
           ProductDetailScreen.routeName :(ctx) => ProductDetailScreen(),
+          CartScreen.routeName : (ctx) => CartScreen(),
         },
       ),
     );

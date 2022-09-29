@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/product.dart';
+import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -11,7 +12,9 @@ class ProductItem extends StatelessWidget {
   // ProductItem(this.id, this.title, this.imageUrl);
   @override
   Widget build(BuildContext context) {
-    final product = Provider.of<Product>(context, listen: false); // by default listen is true.
+    final product = Provider.of<Product>(context,
+        listen: false); // by default listen is true.
+    final cart = Provider.of<Cart>(context, listen: false);
     print("Product rebuilds!");
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
@@ -29,7 +32,7 @@ class ProductItem extends StatelessWidget {
             )),
         footer: GridTileBar(
           leading: Consumer<Product>(
-             // You can use alternative of consumer approach by splitting the
+            // You can use alternative of consumer approach by splitting the
             // widget tree.
             builder: (ctx, product, child) => IconButton(
               // You can also place underscore on the place of child argument.
@@ -42,7 +45,7 @@ class ProductItem extends StatelessWidget {
                 product.toggleFavoriteStatus();
               },
             ),
-            child: Text("Never changes!"),
+            child: const Text("Never changes!"),
           ),
           backgroundColor: Colors.black87,
           title: Text(
@@ -50,9 +53,11 @@ class ProductItem extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           trailing: IconButton(
-            icon: Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.shopping_cart),
             color: Theme.of(context).colorScheme.secondary,
-            onPressed: () {},
+            onPressed: () {
+              cart.addItem(product.id, product.price, product.title);
+            },
           ),
         ),
       ),
