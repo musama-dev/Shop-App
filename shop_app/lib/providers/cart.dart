@@ -63,6 +63,19 @@ class Cart with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void removeItem(String productId) {
+    // to remove item from map using key when item dissmissed on swiping.
+    _items.remove(productId);
+    notifyListeners();
+  }
+
+  
+  // after confirming the order the cart is cleared.
+  void clear() {
+    _items = {};
+    notifyListeners();
+  }
 }
 
 // _items are the items in the cart.

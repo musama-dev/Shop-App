@@ -5,6 +5,8 @@ import '../providers/product.dart';
 import '../providers/cart.dart';
 
 class ProductItem extends StatelessWidget {
+  const ProductItem({super.key});
+
   // final String id;
   // final String title;
   // final String imageUrl;
@@ -14,22 +16,12 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context,
         listen: false); // by default listen is true.
-    final cart = Provider.of<Cart>(context, listen: false);
-    print("Product rebuilds!");
+    final cart = Provider.of<Cart>(context, listen: false); // not interested
+    // in cart changes so that's why listen = false.
+    // print("Product rebuilds!");
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: GridTile(
-        child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(
-                ProductDetailScreen.routeName,
-                arguments: product.id,
-              );
-            },
-            child: Image.network(
-              product.imageUrl,
-              fit: BoxFit.cover,
-            )),
         footer: GridTileBar(
           leading: Consumer<Product>(
             // You can use alternative of consumer approach by splitting the
@@ -60,6 +52,17 @@ class ProductItem extends StatelessWidget {
             },
           ),
         ),
+        child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pushNamed(
+                ProductDetailScreen.routeName,
+                arguments: product.id,
+              );
+            },
+            child: Image.network(
+              product.imageUrl,
+              fit: BoxFit.cover,
+            )),
       ),
     );
   }

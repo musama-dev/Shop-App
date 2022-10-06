@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import '../providers/products.dart';
 
 class ProductsGrid extends StatelessWidget {
-  late bool showFavs;
+  final bool showFavs;
 
-  ProductsGrid(this.showFavs);
+  const ProductsGrid(this.showFavs, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +21,13 @@ class ProductsGrid extends StatelessWidget {
       itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
         // value constructor is used when you don't need context property.
         value: products[index],
-        child: ProductItem(
+        child: const ProductItem(
             // products[index].id,
             // products[index].title,
             // products[index].imageUrl,
             ),
       ),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         // for fixed amount of grids.
         crossAxisCount: 2,
         childAspectRatio: 3 / 2,

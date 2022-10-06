@@ -5,14 +5,17 @@ import '../providers/cart.dart';
 import './cart_screen.dart';
 // import '../providers/products.dart';
 import '../widgets/badge.dart';
+import '../widgets/app_drawer.dart';
 
 // enums are just ways of assigning lables to integers.
 enum FilterOptions {
-  Favorites,
-  All,
+  favorites,
+  all,
 }
 
 class ProductsOverviewScreen extends StatefulWidget {
+  const ProductsOverviewScreen({super.key});
+
   @override
   State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
 }
@@ -24,13 +27,13 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     // final productsContainer = Provider.of<Products>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Text("MyShop"),
+        title: const Text("MyShop"),
         actions: [
           PopupMenuButton(
-            icon: Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             onSelected: (FilterOptions selectedValue) {
               setState(() {
-                if (selectedValue == FilterOptions.Favorites) {
+                if (selectedValue == FilterOptions.favorites) {
                   // productsContainer.showFavoritesOnly();
                   _showOnlyFavorites = true;
                 } else {
@@ -40,20 +43,20 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               });
             },
             itemBuilder: (_) => [
-              PopupMenuItem(
+              const PopupMenuItem(
+                value: FilterOptions.favorites,
                 child: Text("Only Favorites"),
-                value: FilterOptions.Favorites,
               ),
-              PopupMenuItem(
+              const PopupMenuItem(
+                value: FilterOptions.all,
                 child: Text("Show All"),
-                value: FilterOptions.All,
               )
             ],
           ),
           Consumer<Cart>(
             builder: (_, cart, ch) => Badge(
-              child: ch!,
               value: cart.itemCount.toString(),
+              child: ch!,
             ),
             // child: IconButton(
             //     // icon button does'nt depends on the cart, only value depends
@@ -62,7 +65,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             //     onPressed: () {},
             //   ),
             child: IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.shopping_cart,
               ),
               onPressed: () {
@@ -72,6 +75,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
         ],
       ),
+      drawer: const AppDrawer(),
       body: ProductsGrid(_showOnlyFavorites),
     );
   }

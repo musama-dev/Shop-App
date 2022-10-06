@@ -6,7 +6,7 @@ class Products with ChangeNotifier {
   // inherited widgets establish behind the scenes communication tunnels with the
   // help of context.
 
-  List<Product> _items = [
+  final List<Product> _items = [
     // this list is not final because this _items list will change over time.
     Product(
       id: 'p1',
