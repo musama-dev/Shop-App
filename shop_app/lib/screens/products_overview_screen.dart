@@ -14,7 +14,8 @@ enum FilterOptions {
 }
 
 class ProductsOverviewScreen extends StatefulWidget {
-  const ProductsOverviewScreen({super.key});
+  const ProductsOverviewScreen({Key key}) : super(key: key);
+
 
   @override
   State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
@@ -56,7 +57,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           Consumer<Cart>(
             builder: (_, cart, ch) => Badge(
               value: cart.itemCount.toString(),
-              child: ch!,
+              child: ch,
             ),
             // child: IconButton(
             //     // icon button does'nt depends on the cart, only value depends

@@ -1,10 +1,12 @@
 // this widget is used to switch between orders screen and product overview screen.
 import 'package:flutter/material.dart';
 import '../screens/orders_screen.dart';
+import '../screens/user_products_screen.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+  const AppDrawer({Key key}) : super(key: key);
 
+  
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -31,6 +33,15 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               // this will lead us to orders screen page.
               Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text("Manage Products"),
+            onTap: () {
+              // this will lead us to product overview page.
+              Navigator.of(context).pushReplacementNamed(UserProductsScreen.routeName);
             },
           ),
         ],

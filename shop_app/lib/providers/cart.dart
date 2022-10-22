@@ -9,10 +9,10 @@ class CartItem {
   // with quantity.
 
   CartItem(
-      {required this.id,
-      required this.title,
-      required this.quantity,
-      required this.price});
+      {@required this.id,
+      @required this.title,
+      @required this.quantity,
+      @required this.price});
 }
 
 class Cart with ChangeNotifier {
@@ -70,7 +70,25 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  
+  void removeSingleItem(String productId) {
+    if (!_items.containsKey(productId)) {
+      return; // returns cancels the function execution.
+    }
+    if (_items[productId].quantity > 1) {
+      _items.update(
+          productId,
+          (existingCartItem) => CartItem(
+              id: existingCartItem.id,
+              title: existingCartItem.title,
+              quantity: existingCartItem.quantity - 1,
+              price: existingCartItem.price));
+    } else {
+      _items.remove(productId);  // remove the entire item with the help of
+      // the key which is mapped to it.
+    }
+    notifyListeners();
+  }
+
   // after confirming the order the cart is cleared.
   void clear() {
     _items = {};

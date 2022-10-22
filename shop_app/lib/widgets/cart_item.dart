@@ -9,10 +9,37 @@ class CartItem extends StatelessWidget {
   final int quantity;
   final String title;
 
-  const CartItem(this.id, this.productId, this.price, this.quantity, this.title, {super.key});
+  const CartItem(this.id, this.productId, this.price, this.quantity, this.title,
+      {Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Dismissible(
+      confirmDismiss: (direction) {
+        // return Future.value(true);
+        // this future will eventually returns a result in bool which means whether we want
+        // to dismiss or not.
+        return showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: const Text("Are you sure?"),
+                  content:
+                      const Text("Do you want to remove the item from the cart?"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop(false);
+                      },
+                      child: const Text("No"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop(true);
+                      },
+                      child: const Text("Yes"),
+                    ),
+                  ],
+                ));
+      },
       direction: DismissDirection.endToStart,
       key: ValueKey(id),
       onDismissed: (direction) {

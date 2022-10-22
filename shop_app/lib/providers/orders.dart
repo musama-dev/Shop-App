@@ -8,10 +8,10 @@ class OrderItem {
   final DateTime dateTime; // time at which the order was placed.
 
   OrderItem(
-      {required this.id,
-      required this.amount,
-      required this.products,
-      required this.dateTime});
+      {@required this.id,
+      @required this.amount,
+      @required this.products,
+      @required this.dateTime});
 }
 
 class Orders with ChangeNotifier {
@@ -22,6 +22,7 @@ class Orders with ChangeNotifier {
   }
 
   void addOrder(List<CartItem> cartProducts, double total) {
+    // add always adds item at the end of the list.
     _orders.insert(
       0,
       OrderItem(

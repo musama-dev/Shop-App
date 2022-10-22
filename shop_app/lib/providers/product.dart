@@ -9,11 +9,11 @@ class Product with ChangeNotifier {
   bool isFavorite; // changeable that's why not final.
 
   Product(
-      {required this.id,
-      required this.title,
-      required this.description,
-      required this.price,
-      required this.imageUrl,
+      {@required this.id,
+      @required this.title,
+      @required this.description,
+      @required this.price,
+      @required this.imageUrl,
       this.isFavorite = false});
 
   void toggleFavoriteStatus() {

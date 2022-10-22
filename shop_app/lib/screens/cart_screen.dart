@@ -7,8 +7,7 @@ import '../providers/orders.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = "/cart";
-
-  const CartScreen({super.key});
+  const CartScreen({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final cart =
@@ -70,8 +69,8 @@ class CartScreen extends StatelessWidget {
           Expanded(
             // expanded takes as much space left in the column.
             child: ListView.builder(
-              itemCount: cart.items.length, // if you used items as quantities
-              // then cart._items.length used.
+              itemCount: cart.items.length, // Here if you used items as quantities
+              // then in this case cart.items.length used.
               itemBuilder: (ctx, i) {
                 return CartItem(
                   // Here we are interested only in the values of the map so

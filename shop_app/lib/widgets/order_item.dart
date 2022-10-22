@@ -6,7 +6,7 @@ import 'dart:math';
 class OrderItem extends StatefulWidget {
   final ord.OrderItem order;
 
-  const OrderItem(this.order, {super.key});
+  const OrderItem(this.order, {Key key}) : super(key: key);
 
   @override
   State<OrderItem> createState() => _OrderItemState();

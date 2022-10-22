@@ -8,11 +8,11 @@ class ProductDetailScreen extends StatelessWidget {
 
   static const routeName = "/product-detail";
 
-  const ProductDetailScreen({super.key});
+  const ProductDetailScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final productId = ModalRoute.of(context)!.settings.arguments as String;
+    final productId = ModalRoute.of(context).settings.arguments as String;
     final loadedProducts =
         Provider.of<Products>(context, listen: false).findById(productId);
     // adding a product doesn't effect this screen so that's why listen: false.
