@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import './cart.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class OrderItem {
   final String id;
   final double amount; // total amount = quantity x price.
-  final List<CartItem> products; // find which quantity was ordered through cart.
+  final List<CartItem>
+      products; // find which quantity was ordered through cart.
   final DateTime dateTime; // time at which the order was placed.
 
   OrderItem(
@@ -15,20 +18,72 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  final List<OrderItem> _orders = [];
+  List<OrderItem> _orders = [];
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
-  void addOrder(List<CartItem> cartProducts, double total) {
+  Future<void> fetchAndSetOrders() async {
+    final url =
+        Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com', '/orders.json');
+    final respose = await http.get(url);
+    final List<OrderItem> loadedOrders = [];
+    final extractedData = json.decode(respose.body) as Map<String, dynamic>;
+    if (extractedData == null) {
+      return;
+    }
+    extractedData.forEach((orderId, orderData) {
+      loadedOrders.add(
+        OrderItem(
+          id: orderId,
+          amount: orderData["amount"],
+          dateTime: DateTime.parse(
+            orderData["dateTime"],
+          ),
+          products: (orderData["products"] as List<dynamic>).map((item) {
+            return CartItem(
+              id: item["id"],
+              price: item["price"],
+              quantity: item["quantity"],
+              title: item["title"],
+            );
+          }).toList(),
+        ),
+      );
+    });
+    _orders = loadedOrders.reversed.toList();
+    notifyListeners();
+    // print(json.decode(respose.body));
+  }
+
+  Future<void> addOrder(List<CartItem> cartProducts, double total) async {
+    final url =
+        Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com', '/orders.json');
+    // toIso8601String() => uniform string representation of dates which we can
+    // later easily convert back into DateTime object.
+    final timeStamp = DateTime.now();
+    final response = await http.post(url,
+        body: json.encode({
+          "amount": total,
+          "dateTime": timeStamp.toIso8601String(),
+          // products is a map with a list of nested maps inside of it.
+          "products": cartProducts
+              .map((cartProduct) => {
+                    "id": cartProduct.id,
+                    "title": cartProduct.title,
+                    "quantity": cartProduct.quantity,
+                    "price": cartProduct.price,
+                  })
+              .toList(),
+        }));
     // add always adds item at the end of the list.
     _orders.insert(
       0,
       OrderItem(
-        id: DateTime.now().toString(),
+        id: json.decode(response.body)["name"],
         amount: total,
-        dateTime: DateTime.now(),
+        dateTime: timeStamp,
         products: cartProducts,
       ),
     );

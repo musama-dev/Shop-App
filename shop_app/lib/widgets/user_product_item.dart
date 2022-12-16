@@ -3,16 +3,18 @@ import 'package:provider/provider.dart';
 import '../providers/products.dart';
 import '../screens/edit_product_screen.dart';
 
-
 // this widget is used to make a list of product items not grid of product items.
 class UserProductItem extends StatelessWidget {
   final String id;
   final String title;
   final String imageUrl;
 
-  const UserProductItem(this.id, this.title, this.imageUrl, {Key key}) : super(key: key);
+  const UserProductItem(this.id, this.title, this.imageUrl, {Key key})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
+    final nav = Navigator.of(context);
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -23,7 +25,7 @@ class UserProductItem extends StatelessWidget {
         // height: 100.0,
         width: 100,
         child: Row(
-           // this row takes as much width as it can get so wrap it with a SizedBox.
+          // this row takes as much width as it can get so wrap it with a SizedBox.
           children: [
             IconButton(
               onPressed: () {
@@ -51,10 +53,26 @@ class UserProductItem extends StatelessWidget {
                               child: const Text("No"),
                             ),
                             ElevatedButton(
-                              onPressed: () {
-                                Provider.of<Products>(context, listen: false)
-                                    .deleteProduct(id);
-                                Navigator.of(context).pop();
+                              onPressed: () async {
+                                try {
+                                  await Provider.of<Products>(context,
+                                          listen: false)
+                                      .deleteProduct(id);
+                                } catch (error) {
+                                  // of(context) can't be resolved because we are inside
+                                  // future therefore it's not sure whether a context still
+                                  // refers to the same context it did it before.
+                                  // instead of refetching the context everytime we use
+                                  // scaffold as a variable here.
+                                  scaffold.showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Deleting failed!",
+                                      textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                nav.pop();
                               },
                               child: const Text("Yes"),
                             ),

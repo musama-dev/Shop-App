@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../widgets/products_grid.dart';
 import 'package:provider/provider.dart';
-import '../providers/cart.dart';
-import './cart_screen.dart';
-// import '../providers/products.dart';
+import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
 import '../widgets/app_drawer.dart';
+import './cart_screen.dart';
+import '../providers/cart.dart';
+import '../providers/products.dart';
+// import '../providers/products.dart';
 
 // enums are just ways of assigning lables to integers.
 enum FilterOptions {
@@ -16,13 +17,52 @@ enum FilterOptions {
 class ProductsOverviewScreen extends StatefulWidget {
   const ProductsOverviewScreen({Key key}) : super(key: key);
 
-
   @override
   State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorites = false;
+  var _isInit = true;
+  var _isLoading = false;
+  @override
+  void initState() {
+    // this will run when this first gets rendered and it would only run once.
+    // All of these of(context) things dont work in initState because initState
+    // runs too early and the widget is not fully wired up.
+    // Provider.of<Products>(context).fetchAndSetProducts(); // WON'T WORK!
+
+    // Future.delayed(Duration.zero).then((_){
+    //   // this is registered as a to-do action by dart and when the initialization
+    //   // of a class is done then this then() method runs.
+    //   Provider.of<Products>(context).fetchAndSetProducts();
+    // });
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // you should'nt use async await here because these methods like initState() or
+    // didChangeDependencies() the don't return a future.
+    // This method will run after the widget is fully initialized but before build runs
+    // for the first time. It will run multiple times unlike initState().
+
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      }); // always runs for the first
+      // time when the page first loads.
+    }
+    _isInit = false;
+
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     // final productsContainer = Provider.of<Products>(context, listen: false);
@@ -77,7 +117,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(_showOnlyFavorites),
     );
   }
 }
