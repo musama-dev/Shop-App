@@ -47,6 +47,11 @@ class Products with ChangeNotifier {
 
   // var _showFavoritesOnly = false;
 
+  final String authToken;
+  final String userId;
+
+  Products(this.authToken, this.userId, this._items);
+
   List<Product> get items {
     // this getter is used to fetch items from _items list.
 
@@ -78,9 +83,21 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> fetchAndSetProducts() async {
-    final url = Uri.https(
-        'shop-app-ee31b-default-rtdb.firebaseio.com', '/products.json');
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    Map<String, String> params;
+    if (filterByUser) {
+      params = <String, String>{
+        "auth": authToken,
+        "orderBy": json.encode("creatorId"),
+        "equalTo": json.encode(userId)
+      };
+    } else {
+      params = <String, String>{
+        "auth": authToken,
+      };
+    }
+    var url = Uri.https(
+        'shop-app-ee31b-default-rtdb.firebaseio.com', '/products.json', params);
     try {
       final response = await http.get(url);
       final extractedData =
@@ -89,6 +106,10 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+      url = Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com',
+          '/userFavorites/$userId.json', {"auth": authToken});
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -96,7 +117,11 @@ class Products with ChangeNotifier {
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
+          // isFavorite: prodData['isFavorite'],
+          // favoriteData == null means the user has never favorited anything.
+          // if we did'nt have a prodId then favoriteData[prodId] = null.
+          isFavorite:
+              favoriteData == null ? false : favoriteData[prodId] ?? false,
           imageUrl: prodData['imageUrl'],
         ));
       });
@@ -114,8 +139,8 @@ class Products with ChangeNotifier {
     // // the future returns automatically.
     // future resolves void in this case.
     // _items.add(value);
-    final url = Uri.https(
-        'shop-app-ee31b-default-rtdb.firebaseio.com', '/products.json');
+    final url = Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com',
+        '/products.json', {"auth": authToken});
     // .then(fn) returns another future which effectively we return here by
     // returning http.
     // headers are meta data for your request's.
@@ -135,7 +160,9 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavorite': product.isFavorite,
+            "creatorId": userId,
+            // 'isFavorite': product.isFavorite, // favorite status is not a part
+            // of products anymore.
           }));
       // server only know's it's own id's.
       final newProduct = Product(
@@ -188,8 +215,8 @@ class Products with ChangeNotifier {
     if (prodIndex >= 0) {
       // Here the item which is currently stored at that index should be overrirde with
       // a new item.
-      final url = Uri.https(
-          'shop-app-ee31b-default-rtdb.firebaseio.com', '/products/$id.json');
+      final url = Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com',
+          '/products/$id.json', {"auth": authToken});
       await http.patch(url,
           body: json.encode({
             "title": newProduct.title,
@@ -206,8 +233,8 @@ class Products with ChangeNotifier {
     // 200 and 201 => everything worked.
     // 300 => you were redirected.
     // 400 or 4xx or 500 => something went wrong.
-    final url = Uri.https(
-        'shop-app-ee31b-default-rtdb.firebaseio.com', '/products/$id.json');
+    final url = Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com',
+        '/products/$id.json', {"auth": authToken});
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
     // delete does'nt throw an error if we get an error status code back from server.

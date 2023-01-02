@@ -128,6 +128,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       } catch (error) {
         // here we add await because showDialog returns a future and we should
         // await before we continue to finally block.
+        // ignore: prefer_void_to_null
         await showDialog<Null>(
             context: context,
             builder: (ctx) {
@@ -158,6 +159,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
         _isLoading = false;
       });
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
   }
   // .catchError((error) {

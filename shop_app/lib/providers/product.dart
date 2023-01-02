@@ -23,19 +23,26 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavoriteStatus() async {
+  Future<void> toggleFavoriteStatus(String token, String userId) async {
     final oldStatus = isFavorite;
     // We just have to invert the value of favourite icon.
     isFavorite = !isFavorite;
     notifyListeners(); // Its like set state. It notify listing widgets so
     // they gets rebuild.
-    final url = Uri.https(
-        'shop-app-ee31b-default-rtdb.firebaseio.com', '/products/$id.json');
+    final url = Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com',
+        '/userFavorites/$userId/$id.json', {"auth": token});
     try {
-      final response = await http.patch(url,
-          body: json.encode({
-            "isFavorite": isFavorite,
-          }));
+      // we dont want to append new values when we switch the status so
+      // that's why change patch to put.
+      // put request is for overriding the existing status.
+      final response = await http.put(url,
+          body: json.encode(
+            isFavorite, // now we just send true or false as a value.
+          //   {
+          //   isFavorite,
+          //   // "isFavorite": isFavorite,
+          // }
+          ));
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);
       }

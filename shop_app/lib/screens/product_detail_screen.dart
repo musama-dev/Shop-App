@@ -13,26 +13,38 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productId = ModalRoute.of(context).settings.arguments as String;
-    final loadedProducts =
+    final loadedProduct =
         Provider.of<Products>(context, listen: false).findById(productId);
     // adding a product doesn't effect this screen so that's why listen: false.
     return Scaffold(
-      appBar: AppBar(
-        title: Text(loadedProducts.title),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              // we output image in a container.
-              height: 300,
-              width: double.infinity,
-              child: Image.network(loadedProducts.imageUrl, fit: BoxFit.cover),
+      // appBar: AppBar(
+      //   title: Text(loadedProduct.title),
+      // ),
+      body: CustomScrollView(
+        // CustomScrollView is for more controlling.
+        slivers: [
+          // slivers are scrollable areas on the screen.
+          SliverAppBar(
+            expandedHeight: 300, // this is height the appbar have when it is image.
+            pinned: true, // means the appbar is always visible when we scroll.
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(loadedProduct.title),
+              // background is the part which is visible if this is expanded.
+              background: Hero(
+                tag: loadedProduct.id,
+                child: Image.network(loadedProduct.imageUrl, fit: BoxFit.cover)),
             ),
-            const SizedBox(
+          ),
+          SliverList(
+            // SliverList is a listview as part of multiple slivers.
+            // delegate property is for how to render the content of the list.
+            delegate: SliverChildListDelegate([
+              const SizedBox(
               height: 10,
             ),
-            Text("\$${loadedProducts.price}", style: const TextStyle(
+            Text("\$${loadedProduct.price}", 
+            textAlign: TextAlign.center,
+            style: const TextStyle(
               color: Colors.grey,
               fontSize: 20,
             ),
@@ -41,12 +53,27 @@ class ProductDetailScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               width: double.infinity,
-              child: Text(loadedProducts.description, textAlign: TextAlign.center,
+              child: Text(loadedProduct.description, textAlign: TextAlign.center,
               softWrap: true,
               ),
             ),
-          ],
-        ),
+            const SizedBox(
+              height: 800,
+            ),
+            ]),
+          ), // your listview as a part of multiple slivers.
+        ], // slivers are basically scrollable areas on the screen.
+        // child: Column(
+        //   children: [
+        //     SizedBox(
+        //       // we output image in a container.
+        //       height: 300,
+        //       width: double.infinity,
+        //       child: 
+        //     ),
+            
+        //   ],
+        // ),
       ),
     );
   }

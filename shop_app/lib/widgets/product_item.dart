@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({Key key}) : super(key: key);
@@ -18,6 +19,7 @@ class ProductItem extends StatelessWidget {
         listen: false); // by default listen is true.
     final cart = Provider.of<Cart>(context, listen: false); // not interested
     // in cart changes so that's why listen = false.
+    final authData = Provider.of<Auth>(context, listen: false);
     // print("Product rebuilds!");
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
@@ -34,7 +36,7 @@ class ProductItem extends StatelessWidget {
               // it never rebuilds.
               color: Theme.of(context).colorScheme.secondary,
               onPressed: () {
-                product.toggleFavoriteStatus();
+                product.toggleFavoriteStatus(authData.token, authData.userId);
               },
             ),
             child: const Text("Never changes!"),
@@ -64,16 +66,29 @@ class ProductItem extends StatelessWidget {
           ),
         ),
         child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(
-                ProductDetailScreen.routeName,
-                arguments: product.id,
-              );
-            },
-            child: Image.network(
-              product.imageUrl,
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              ProductDetailScreen.routeName,
+              arguments: product.id,
+            );
+          },
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+              placeholder: const AssetImage(
+                  "assets/images/product-placeholder.png"), // loading image
+              // image.
+              image: NetworkImage(
+                  product.imageUrl), // this image is shown when the animation
+              // is done.
               fit: BoxFit.cover,
-            )),
+            ),
+          ),
+          // Image.network(
+          //   product.imageUrl,
+          //   fit: BoxFit.cover,
+          // ),
+        ),
       ),
     );
   }

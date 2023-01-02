@@ -19,14 +19,18 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
+  final String authToken;
+  final String userId;
+
+  Orders(this.authToken, this.userId, this._orders);
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
   Future<void> fetchAndSetOrders() async {
-    final url =
-        Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com', '/orders.json');
+    final url = Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com',
+        '/orders/$userId.json', {"auth": authToken});
     final respose = await http.get(url);
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(respose.body) as Map<String, dynamic>;
@@ -58,8 +62,8 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    final url =
-        Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com', '/orders.json');
+    final url = Uri.https('shop-app-ee31b-default-rtdb.firebaseio.com',
+        '/orders/$userId.json', {"auth": authToken});
     // toIso8601String() => uniform string representation of dates which we can
     // later easily convert back into DateTime object.
     final timeStamp = DateTime.now();
