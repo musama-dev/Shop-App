@@ -1,1 +1,1 @@
-A Full Stack Shop Application with a proper state management solution 🛒🚀
+A Full Stack Shop Application made by using Flutter with provider state management and a Firebase API 🛒🚀
