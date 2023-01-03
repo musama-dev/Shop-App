@@ -26,8 +26,8 @@ class CustomRoute<T> extends MaterialPageRoute<T> {
   }
 }
 
-
-class CustomPageTransitionBuilder extends PageTransitionsBuilder{
+// This is for all routes and it is more generic.
+class CustomPageTransitionBuilder extends PageTransitionsBuilder {
   @override
   Widget buildTransitions<T>(
     PageRoute<T> route,
